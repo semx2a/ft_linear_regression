@@ -4,95 +4,85 @@
 
 This school project is an introduction to machine learning. The goal is to predict the price of a car based on its mileage. The project is divided into two parts: a training part and a prediction part.
 
-## The algorithm
+## What is linear regression?
 
-1. Dataset: $(x, y)$ with $m$ examples, $n$ variables
+Linear regression is the one of the founding principles of machine learning.
+
+Machine learning is a field of artificial intelligence that uses statistical techniques to give computer systems the ability to "learn" (i.e., progressively improve performance on a specific task) from data, without being explicitly programmed.
+
+## How does this project use linear regression?
+
+This project aims at producing a model that can predict the price of a car based on its mileage.
+
+The project is made of two parts: a training part and a prediction part.
+
+### The training part
+
+The training part is based on the following hypothesis:
 
 ```math
 \begin{equation*}
-\begin{matrix}
-X = 
-\begin{bmatrix} 
-x^{(1)}_1 & x^{(1)}_2 & \cdots & x^{(1)}_n \\ 
-x^{(2)}_1 & x^{(2)}_2 & \cdots & x^{(2)}_n \\ 
-\vdots & \vdots & \ddots & \vdots \\ 
-x^{(m)}_1 & x^{(m)}_2 & \cdots & x^{(m)}_n 
-\end{bmatrix} \\
-
-m \times (n+1)
-\end{matrix}
-\end{equation*}
-
-\qquad
-
-\begin{equation*}
-\begin{matrix}
-Y = 
-\begin{bmatrix} 
-y^{(1)} \\
-y^{(2)} \\
-\vdots \\
-y^{(m)} 
-\end{bmatrix} \\
-m \times 1
-\end{matrix}
-\end{equation*}
-
-\qquad
-
-\begin{equation*}
-\begin{matrix}
-\theta = 
-\begin{bmatrix} 
-a \\ 
-b 
-\end{bmatrix} \\
-
-(n + 1) \times 1 
-\end{matrix}
+error = \frac{1}{2m} \sum_{i=1}^{m} (estimatePrice(mileage_i) - price_i)^2
 \end{equation*}
 ```
 
-2. Model:
+Where $m$ is the number of samples in the dataset, $mileage_i$ is the mileage of the $i-th$ car in the dataset, and $price_i$ is the price of the $i-th$ car in the dataset.
+
+This hypothesis is a cost function that measures the error of the model. The goal of the training part is to find the values of the parameters $\theta_0$ and $\theta_1$ that minimize the error of the model.
+
+The values of the parameters $\theta_0$ and $\theta_1$ are found using the gradient descent algorithm. This algorithm is an optimization algorithm that is used to minimize the error of the model. They will be stored in a file `theta.json` that will be used in the prediction part.
+
+### The prediction part
+
+The prediction part is based on the following hypothesis:
 
 ```math
 \begin{equation*}
-F = X.\theta
+estimatePrince(mileage) = \theta_0 + (\theta_1 \times mileage)
 \end{equation*}
-\qquad
-m \times 1
 ```
 
-3. Cost function:
+This hypothesis is based on the assumption that the price of a car is a linear function of its mileage. The goal of the prediction program is to predict the price of the car based on its mileage.
 
-```math
-\begin{equation*}
-J(\theta) = \frac{1}{2m}\sum(X.\theta+Y)^2
-\end{equation*}
-\qquad
-1 \times 1
+### The algorithm
+
+This algorithm is detailed in code inside the [jupyter notebook](./notebook.ipynb) inside this repo.
+
+## Usage
+
+### Dataset
+
+The dataset used to train the model is located in the `data.csv` file. This file contains two columns: `mileage` and `price`.
+
+### Training
+
+To train the model, you need to run the following command:
+
+```bash
+python train.py
 ```
 
-4. Gradients:
+This will generate a file called `theta.csv` that contains the values of the parameters of the model.
 
-```math
-\begin{equation*}
-\frac{\partial J(\theta)}{\partial \theta} = \frac{1}{m} X^T.(X.\theta-Y)
-\end{equation*}
-\qquad
-(n+1) \times 1
+### Prediction
+
+To predict the price of a car based on its mileage, you need to run the following command:
+
+```bash
+python predict.py
 ```
 
-5. Gradient Descent Algorithm:
+You will be prompted to enter the mileage of the car you want to predict the price of.
 
-```math
-\begin{equation*}
-\theta := \theta - \alpha\frac{\partial J(\theta)}{\partial \theta}
-\end{equation*}
-\qquad
-(n+1) \times 1
+## Installation
+
+To install the dependencies, you need to run the following command:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## References
 
 - [La régression linéaire 🇫🇷](https://www.youtube.com/watch?v=wg7-roETbbM&t=27s&ab_channel=MachineLearnia)
+- [Regression linéraire Numpy](https://youtu.be/vG6tDQc86Rs?list=PLO_fdPEVlfKqUF5BPKjGSh7aV9aBshrpY)
