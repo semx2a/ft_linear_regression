@@ -38,7 +38,7 @@ The prediction part is based on the following hypothesis:
 
 ```math
 \begin{equation*}
-estimatePrince(mileage) = \theta_0 + (\theta_1 \times mileage)
+estimatePrice(mileage) = \theta_0 + (\theta_1 \times mileage)
 \end{equation*}
 ```
 
@@ -72,7 +72,7 @@ To predict the price of a car based on its mileage, you need to run the followin
 python predict.py
 ```
 
-You will be prompted to enter the mileage of the car you want to predict the price of.
+You will be prompted to enter the mileage of the car you want to predict the price.
 
 ## Installation
 
