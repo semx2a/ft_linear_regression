@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn import preprocessing    
 
 
 def load_csv(path: str) -> pd.DataFrame:
@@ -38,29 +39,52 @@ def gradient_descent(X, y, theta, learning_rate, n_iterations):
 
 def train():
 
-    df = load_csv("../data.csv")
-    x, y = df["km"].to_numpy(), df["price"].to_numpy()
+    try:
+        df = load_csv("../data.csv")
+        x, y = df["km"].to_numpy(), df["price"].to_numpy()
+        print(f"x: {x}")
+        print(f"y: {y}")
 
-    x = x.reshape(x.shape[0], 1)
-    y = y.reshape(y.shape[0], 1)
+        x = np.vstack(x)
+        y = np.vstack(y)
+        print(f"xv: {x}")
+        print(f"yv: {y}")
 
-    # X matrix
-    X = np.hstack((x, np.ones(x.shape)))
-    theta = np.zeros((2, 1))
-    learning_rate = 0.01
-    n_iterations = 1000
+        # normalize values
+        X_robust = preprocessing.RobustScaler().fit_transform(x)
+        print(f"X scaled: {X_robust}")
+        Y_robust = preprocessing.RobustScaler().fit_transform(y)
+        print(f"Y scaled: {Y_robust}")
 
-    theta_final, cost_history = gradient_descent(X, y, theta,
-                                                 learning_rate,
-                                                 n_iterations)
+        # X matrix
+        X = np.hstack((x, np.ones(x.shape)))
+        X_normalized = np.hstack((X_robust, np.ones(X_robust.shape)))
+        print(f"X_normalized = {X_normalized}")
+        theta = np.zeros((2, 1))
+        learning_rate = 0.001
+        n_iterations = 1000
 
-    print(f"theta_final = {theta_final}")
+        theta_final, cost_history = gradient_descent(X_normalized,
+                                                     Y_robust,
+                                                     theta,
+                                                     learning_rate,
+                                                     n_iterations)
 
-    predictions = model(X, theta_final)
-    plt.scatter(x, y)
-    plt.plot(x, predictions, c='r')
-    # plt.plot(range(1000), cost_history)
-    plt.show()
+        print(f"theta_final = {theta_final}")
+
+        predictions = model(X, theta_final)
+        plt.scatter(x, y, color='blue', label="Données réelles")
+        # plt.scatter(X_robust, Y_robust)
+        plt.plot(x, predictions, color='red', label="Ligne de regression")
+        plt.xlabel("Mileage")
+        plt.ylabel("Price")
+        plt.legend()
+        plt.title("Régression linéaire avec coefficient de détermination")
+        # plt.plot(range(1000), cost_history)
+        plt.show()
+
+    except Exception as e:
+        exit(f"Exception: {e}")
 
 
 def main():

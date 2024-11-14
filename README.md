@@ -64,6 +64,18 @@ python train.py
 
 This will generate a file called `theta.csv` that contains the values of the parameters of the model.
 
+#### A word about normalization
+
+I chose to implement Robust Scaling as a normalization method. This method is robust to **outliers**[^1] and is based on the following formula:
+
+```math
+\begin{equation*}
+X_{scaled} = \frac{X - X_{median}}{IQR}
+\end{equation*}
+```
+
+Where $X$ is the feature to scale, $X_{median}$ is the median of the feature, and $IQR$ is the interquartile range of the feature.
+
 ### Prediction
 
 To predict the price of a car based on its mileage, you need to run the following command:
@@ -84,5 +96,19 @@ pip install -r requirements.txt
 
 ## References
 
-- [La régression linéaire 🇫🇷](https://www.youtube.com/watch?v=wg7-roETbbM&t=27s&ab_channel=MachineLearnia)
+### Articles
+
+- [Gradient Descent](https://en.wikipedia.org/wiki/Gradient_descent)
+- [Coefficient of Determination](https://en.wikipedia.org/wiki/Coefficient_of_determination)
+- [Theta](https://en.wikipedia.org/wiki/Theta)
+- [Normlization(statistics)](https://en.wikipedia.org/wiki/Normalization_(statistics))
+  - [Robust Scaler](https://scikit-learn.org/dev/modules/generated/sklearn.preprocessing.RobustScaler.html)
+  - [Standard Scaler](https://scikit-learn.org/dev/modules/generated/sklearn.preprocessing.StandardScaler.html)
+
+### Videos
+
+- [La régression linéaire](https://www.youtube.com/watch?v=wg7-roETbbM&t=27s&ab_channel=MachineLearnia)
 - [Regression linéraire Numpy](https://youtu.be/vG6tDQc86Rs?list=PLO_fdPEVlfKqUF5BPKjGSh7aV9aBshrpY)
+- [Normalisation des données](https://youtu.be/OGWwzm304Xs?t=946)
+
+[^1]: outliers are values that are significantly different from the rest of the data and can distort the model. Robust scaling is a normalization method that is robust to outliers. My main goal in implementing this normalization method was to prevent this issue from happening.
