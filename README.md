@@ -101,6 +101,7 @@ pip install -r requirements.txt
 - [Gradient Descent](https://en.wikipedia.org/wiki/Gradient_descent)
 - [Coefficient of Determination](https://en.wikipedia.org/wiki/Coefficient_of_determination)
 - [Theta](https://en.wikipedia.org/wiki/Theta)
+- [Feature Scaling](https://en.wikipedia.org/wiki/Feature_scaling)
 - [Normlization(statistics)](https://en.wikipedia.org/wiki/Normalization_(statistics))
   - [Robust Scaler](https://scikit-learn.org/dev/modules/generated/sklearn.preprocessing.RobustScaler.html)
   - [Standard Scaler](https://scikit-learn.org/dev/modules/generated/sklearn.preprocessing.StandardScaler.html)

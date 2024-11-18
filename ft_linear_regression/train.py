@@ -1,95 +1,83 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-from sklearn import preprocessing    
 
 
-def load_csv(path: str) -> pd.DataFrame:
+class Train():
 
-    try:
-        data = pd.read_csv(path)
-        return data
-    except Exception as e:
-        print(f"Error: {e}")
+    def __init__(self, path: str):
+        self.df = self.load_csv(path)
+        self.x, self.y = self.load_data()
+        self.X, self.Y = self.normalize_data()
+        self.theta = np.zeros((2, 1))
+        self.learning_rate = 0.001
+        self.n_iterations = 1000
 
+        self.theta, self.cost_history = self.gradient_descent(
+            self.X,
+            self.Y,
+            self.theta,
+            self.learning_rate,
+            self.n_iterations
+            )
 
-def model(X: np.ndarray, theta: np.ndarray):
-    return X.dot(theta)
+        self.theta = self.denormalize_theta(self.theta)
+        print(f"theta = {self.theta}")
 
+    def load_csv(self, path: str) -> pd.DataFrame:
 
-def cost_function(X, y, theta):
-    m = len(y)
-    return 1/(2*m) * np.sum((model(X, theta) - y)**2)
+        try:
+            df = pd.read_csv(path)
+            return df
+        except Exception as e:
+            print(f"Error: {e}")
 
+    def load_data(self):
+        x = self.df["km"].dropna().to_numpy()
+        y = self.df["price"].dropna().to_numpy()
 
-def grad(X, y, theta):
-    m = len(y)
-    # using ndarray's transpose `T()` function in the formula
-    return 1/m * X.T.dot(model(X, theta) - y)
-
-
-def gradient_descent(X, y, theta, learning_rate, n_iterations):
-
-    cost_history = np.zeros(n_iterations)
-    for i in range(0, n_iterations):
-        theta = theta - learning_rate * grad(X, y, theta)
-        cost_history[i] = cost_function(X, y, theta)
-    return theta, cost_history
-
-
-def train():
-
-    try:
-        df = load_csv("../data.csv")
-        x, y = df["km"].to_numpy(), df["price"].to_numpy()
         print(f"x: {x}")
         print(f"y: {y}")
+        return x, y
 
-        x = np.vstack(x)
-        y = np.vstack(y)
-        print(f"xv: {x}")
-        print(f"yv: {y}")
+    def normalize_data(self):
+        # transpose values into vertical stack
+        vx = np.vstack(self.x)
+        vy = np.vstack(self.y)
+        print(f"xv: {self.x}")
+        print(f"yv: {self.y}")
 
         # normalize values
-        X_robust = preprocessing.RobustScaler().fit_transform(x)
-        print(f"X scaled: {X_robust}")
-        Y_robust = preprocessing.RobustScaler().fit_transform(y)
-        print(f"Y scaled: {Y_robust}")
+        X = self.robust_scaler(vx)
+        print(f"X scaled: {X}")
+        Y = self.robust_scaler(vy)
+        print(f"Y scaled: {Y}")
 
         # X matrix
-        X = np.hstack((x, np.ones(x.shape)))
-        X_normalized = np.hstack((X_robust, np.ones(X_robust.shape)))
-        print(f"X_normalized = {X_normalized}")
-        theta = np.zeros((2, 1))
-        learning_rate = 0.001
-        n_iterations = 1000
+        X = np.hstack((X, np.ones(X.shape)))
+        print(f"X normalized = {X}")
 
-        theta_final, cost_history = gradient_descent(X_normalized,
-                                                     Y_robust,
-                                                     theta,
-                                                     learning_rate,
-                                                     n_iterations)
+        return X, Y
 
-        print(f"theta_final = {theta_final}")
+    def robust_scaler(self, matrix):
+        return (matrix - matrix.mean()) / matrix.std()
 
-        predictions = model(X, theta_final)
-        plt.scatter(x, y, color='blue', label="Données réelles")
-        # plt.scatter(X_robust, Y_robust)
-        plt.plot(x, predictions, color='red', label="Ligne de regression")
-        plt.xlabel("Mileage")
-        plt.ylabel("Price")
-        plt.legend()
-        plt.title("Régression linéaire avec coefficient de détermination")
-        # plt.plot(range(1000), cost_history)
-        plt.show()
+    def gradient_descent(self, X, Y, theta, learning_rate, n_iterations):
+        cost_history = np.zeros(n_iterations)
+        for i in range(0, n_iterations):
+            theta = theta - learning_rate * self.grad(X, Y, theta)
+            cost_history[i] = self.cost_function(X, Y, theta)
+        return theta, cost_history
 
-    except Exception as e:
-        exit(f"Exception: {e}")
+    def grad(self, X, Y, theta):
+        m = len(Y)
+        return 1/m * X.T.dot(self.model(X, theta) - Y)
 
+    def cost_function(self, X, Y, theta):
+        m = len(Y)
+        return 1/(2*m) * np.sum((self.model(X, theta) - Y)**2)
 
-def main():
-    train()
+    def model(self, X: np.ndarray, theta: np.ndarray):
+        return X.dot(theta)
 
-
-if __name__ == "__main__":
-    main()
+    def denormalize_theta(self, theta):
+        return theta * self.y.std() / self.x.std()
