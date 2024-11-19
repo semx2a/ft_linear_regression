@@ -5,9 +5,9 @@ import numpy as np
 class Train():
 
     def __init__(self, path: str):
-        self.df = self.load_csv(path)
-        self.x, self.y = self.load_data()
-        self.X, self.Y = self.normalize_data()
+        self.df = self.__load_csv(path)
+        self.x, self.y = self.__load_data()
+        self.X, self.Y = self.__normalize_data()
         self.theta = np.zeros((2, 1))
         self.learning_rate = 0.001
         self.n_iterations = 1000
@@ -20,10 +20,10 @@ class Train():
             self.n_iterations
             )
 
-        self.theta = self.denormalize_theta(self.theta)
+        self.theta = self.denormalize_theta(self.theta, self.x, self.y)
         print(f"theta = {self.theta}")
 
-    def load_csv(self, path: str) -> pd.DataFrame:
+    def __load_csv(self, path: str) -> pd.DataFrame:
 
         try:
             df = pd.read_csv(path)
@@ -31,7 +31,7 @@ class Train():
         except Exception as e:
             print(f"Error: {e}")
 
-    def load_data(self):
+    def __load_data(self):
         x = self.df["km"].dropna().to_numpy()
         y = self.df["price"].dropna().to_numpy()
 
@@ -39,7 +39,7 @@ class Train():
         print(f"y: {y}")
         return x, y
 
-    def normalize_data(self):
+    def __normalize_data(self):
         # transpose values into vertical stack
         vx = np.vstack(self.x)
         vy = np.vstack(self.y)
@@ -58,26 +58,34 @@ class Train():
 
         return X, Y
 
-    def robust_scaler(self, matrix):
-        return (matrix - matrix.mean()) / matrix.std()
-
-    def gradient_descent(self, X, Y, theta, learning_rate, n_iterations):
+    @staticmethod
+    def gradient_descent(X, Y, theta, learning_rate, n_iterations):
         cost_history = np.zeros(n_iterations)
         for i in range(0, n_iterations):
-            theta = theta - learning_rate * self.grad(X, Y, theta)
-            cost_history[i] = self.cost_function(X, Y, theta)
+            theta = theta - learning_rate * Train.grad(X, Y, theta)
+            cost_history[i] = Train.cost_function(X, Y, theta)
         return theta, cost_history
 
-    def grad(self, X, Y, theta):
+    @staticmethod
+    def grad(X, Y, theta):
         m = len(Y)
-        return 1/m * X.T.dot(self.model(X, theta) - Y)
+        return 1/m * X.T.dot(Train.model(X, theta) - Y)
 
-    def cost_function(self, X, Y, theta):
+    @staticmethod
+    def cost_function(X, Y, theta):
         m = len(Y)
-        return 1/(2*m) * np.sum((self.model(X, theta) - Y)**2)
+        return 1/(2*m) * np.sum((Train.model(X, theta) - Y)**2)
 
-    def model(self, X: np.ndarray, theta: np.ndarray):
+    @staticmethod
+    def model(X: np.ndarray, theta: np.ndarray):
         return X.dot(theta)
 
-    def denormalize_theta(self, theta):
-        return theta * self.y.std() / self.x.std()
+    @staticmethod
+    def robust_scaler(matrix):
+        return (matrix - matrix.mean()) / matrix.std()
+
+    @staticmethod
+    def denormalize_theta(theta, x, y):
+        slope = theta[0] * y.std() / x.std()
+        intercept = y.mean() - slope * x.mean()
+        return np.array([slope, intercept]).reshape(-1, 1)
