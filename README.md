@@ -105,6 +105,7 @@ pip install -r requirements.txt
 - [Normlization(statistics)](https://en.wikipedia.org/wiki/Normalization_(statistics))
   - [Robust Scaler](https://scikit-learn.org/dev/modules/generated/sklearn.preprocessing.RobustScaler.html)
   - [Standard Scaler](https://scikit-learn.org/dev/modules/generated/sklearn.preprocessing.StandardScaler.html)
+- [Programmatic Fitting](https://fr.mathworks.com/help/matlab/data_analysis/programmatic-fitting.html)
 
 ### Videos
 

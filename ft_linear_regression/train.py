@@ -8,9 +8,10 @@ class Train():
         self.df = self.__load_csv(path)
         self.x, self.y = self.__load_data()
         self.X, self.Y = self.__normalize_data()
+
         self.theta = np.zeros((2, 1))
         self.learning_rate = 0.001
-        self.n_iterations = 1000
+        self.n_iterations = 10000
 
         self.theta, self.cost_history = self.gradient_descent(
             self.X,
@@ -21,6 +22,7 @@ class Train():
             )
 
         self.theta = self.denormalize_theta(self.theta, self.x, self.y)
+
         print(f"theta = {self.theta}")
 
     def __load_csv(self, path: str) -> pd.DataFrame:
@@ -86,6 +88,6 @@ class Train():
 
     @staticmethod
     def denormalize_theta(theta, x, y):
-        slope = theta[0] * y.std() / x.std()
-        intercept = y.mean() - slope * x.mean()
-        return np.array([slope, intercept]).reshape(-1, 1)
+        theta[0] = theta[0] * y.std() / x.std()
+        theta[1] = y.mean() - theta[0] * x.mean()
+        return theta

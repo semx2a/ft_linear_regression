@@ -3,8 +3,12 @@ from train import Train
 from time import sleep
 
 
+def hypothesis(theta, x):
+    return theta[0] * x + theta[1]
+
+
 def show_regression(model: Train):
-    predictions = model.model(model.X, model.theta)
+    predictions = hypothesis(model.theta, model.x)
     plt.scatter(model.x, model.y, color='blue', label="Data")
     # plt.scatter(model.X[0:, 0], model.Y, color='green', label="")
     plt.plot(model.x, predictions, color='red', label="Regression line")
