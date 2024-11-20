@@ -11,7 +11,7 @@ class Train():
 
         self.theta = np.zeros((2, 1))
         self.learning_rate = 0.001
-        self.n_iterations = 10000
+        self.n_iterations = 5000
 
         self.theta, self.cost_history = self.gradient_descent(
             self.X,
@@ -19,11 +19,9 @@ class Train():
             self.theta,
             self.learning_rate,
             self.n_iterations
-            )
+        )
 
         self.theta = self.denormalize_theta(self.theta, self.x, self.y)
-
-        print(f"theta = {self.theta}")
 
     def __load_csv(self, path: str) -> pd.DataFrame:
 
@@ -37,26 +35,22 @@ class Train():
         x = self.df["km"].dropna().to_numpy()
         y = self.df["price"].dropna().to_numpy()
 
-        print(f"x: {x}")
-        print(f"y: {y}")
+        if len(x) != len(y):
+            exit("Error: The dataset is not properly formatted.")
+
         return x, y
 
     def __normalize_data(self):
         # transpose values into vertical stack
         vx = np.vstack(self.x)
         vy = np.vstack(self.y)
-        print(f"xv: {self.x}")
-        print(f"yv: {self.y}")
 
-        # normalize values
+        # normalize values with robust scaler
         X = self.robust_scaler(vx)
-        print(f"X scaled: {X}")
         Y = self.robust_scaler(vy)
-        print(f"Y scaled: {Y}")
 
-        # X matrix
+        # X matrix with 1s for bias
         X = np.hstack((X, np.ones(X.shape)))
-        print(f"X normalized = {X}")
 
         return X, Y
 
@@ -84,7 +78,8 @@ class Train():
 
     @staticmethod
     def robust_scaler(matrix):
-        return (matrix - matrix.mean()) / matrix.std()
+        q75, q25 = np.percentile(matrix, [75, 25])
+        return (matrix - np.median(matrix)) / (q75 - q25)
 
     @staticmethod
     def denormalize_theta(theta, x, y):
