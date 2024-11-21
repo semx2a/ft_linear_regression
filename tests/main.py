@@ -13,7 +13,7 @@ def main(argv):
 
     model = train.Train(argv[1])
 
-    welcome = "Welcome to CarValue, your car price prediction machine!\n"
+    welcome = "Welcome to CarML, your car price prediction machine!\n"
     welcome += "Please select an option:\n"
     welcome += "1. Estimate a price\n"
     welcome += "2. Show regression plot\n"

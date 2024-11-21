@@ -1,42 +1,63 @@
-import pandas as pd
 import numpy as np
+
+from .load_csv import load
+from .file_info import get_file_info
+from .json import generate_json, load_json
 
 
 class Train():
 
     def __init__(self, path: str):
-        self.df = self.__load_csv(path)
-        self.x, self.y = self.__load_data()
-        self.X, self.Y = self.__normalize_data()
 
-        self.theta = np.zeros((2, 1))
-        self.learning_rate = 0.001
+        self.__df = load(path)
+        self.x, self.y = self.__get_features_targets()
+        self.__file_info = load_json("file_info.json")
+        self.payload = None
+        db_info = get_file_info(path)
+        if db_info != self.__file_info:
+            self.__file_info = db_info
+            generate_json(name="file_info", content=self.__file_info)
+        else:
+            data = load_json("carml.json")
+            if data:
+                if "theta" in data and "cost_history" in data:
+                    self.payload = data
+                else:
+                    self.payload = self.__start_training(path)
+                    generate_json(name="carml", content=self.payload)
+
+    def __start_training(self, path: str) -> dict:
+
+        self.X, self.Y = self.__normalize_data()
+        self.__theta = np.zeros((2, 1))
+        self.__learning_rate = 0.001
         self.n_iterations = 5000
 
-        self.theta, self.cost_history = self.gradient_descent(
+        self.__theta, self.__cost_history = self.gradient_descent(
             self.X,
             self.Y,
-            self.theta,
-            self.learning_rate,
-            self.n_iterations
+            self.__theta,
+            self.__learning_rate,
+            self.__n_iterations
         )
 
-        self.theta = self.denormalize_theta(self.theta, self.x, self.y)
+        self.__theta = self.denormalize_theta(self.__theta, self.x, self.y)
 
-    def __load_csv(self, path: str) -> pd.DataFrame:
+        self.payload = self.__build_payload(self.__theta,
+                                            self.__cost_history,
+                                            self.__n_iterations)
+        return self.payload
 
-        try:
-            df = pd.read_csv(path)
-            return df
-        except Exception as e:
-            print(f"Error: {e}")
-
-    def __load_data(self):
-        x = self.df["km"].dropna().to_numpy()
-        y = self.df["price"].dropna().to_numpy()
+    def __get_features_targets(self):
+        """ Get the features and targets from the dataset.
+        x = features,
+        y = targets
+        """
+        x = self.__df["km"].dropna().to_numpy()
+        y = self.__df["price"].dropna().to_numpy()
 
         if len(x) != len(y):
-            exit("Error: The dataset is not properly formatted.")
+            raise ValueError("Error: The dataset is not properly formatted.")
 
         return x, y
 
@@ -53,6 +74,13 @@ class Train():
         X = np.hstack((X, np.ones(X.shape)))
 
         return X, Y
+
+    def __build_payload(self, theta, cost_history, n_iterations):
+        return {
+            "theta": theta,
+            "cost_history": cost_history,
+            "n_iterations": n_iterations
+        }
 
     @staticmethod
     def gradient_descent(X, Y, theta, learning_rate, n_iterations):

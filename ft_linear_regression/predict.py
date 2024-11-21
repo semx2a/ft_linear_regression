@@ -7,11 +7,12 @@ def hypothesis(theta, x):
 
 
 def show_regression(model: Train):
-    predictions = hypothesis(model.theta, model.x)
 
     plt.scatter(model.x, model.y, color='blue', label="Data")
     plt.scatter(model.X[0:, 0], model.Y, color='green',
                 label="Normalized data")
+    
+    predictions = hypothesis(model.payload["theta"], model.x)
     plt.plot(model.x, predictions, color='red', label="Regression line")
 
     plt.xlabel("Mileage")
@@ -24,7 +25,7 @@ def show_regression(model: Train):
 
 
 def price_estimation(model: Train, mileage: int):
-    price = model.theta[0] * mileage + model.theta[1]
+    price = model.payload["theta"][0] * mileage + model.payload["theta"][1]
     price = price[0]
 
     if price < 0:
@@ -35,7 +36,7 @@ def price_estimation(model: Train, mileage: int):
 
 
 def show_cost_history(model: Train):
-    plt.plot(range(model.n_iterations), model.cost_history, 
+    plt.plot(range(model.n_iterations), model.payload["cost_history"],
              color='blue', label="Cost history")
 
     plt.xlabel("Iterations")
