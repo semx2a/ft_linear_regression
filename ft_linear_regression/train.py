@@ -13,25 +13,31 @@ class Train():
         self.x, self.y = self.__get_features_targets()
         self.__file_info = load_json("file_info.json")
         self.payload = None
+
         db_info = get_file_info(path)
         if db_info != self.__file_info:
             self.__file_info = db_info
             generate_json(name="file_info", content=self.__file_info)
+
+        data = load_json("carml.json")
+        if data:
+            if "theta" in data and "cost_history" in data:
+                self.payload = {
+                    "theta": np.array(data["theta"]),
+                    "cost_history": np.array(data["cost_history"]),
+                    "n_iterations": int(data["n_iterations"])
+                    }
+                print("Model already trained.")
         else:
-            data = load_json("carml.json")
-            if data:
-                if "theta" in data and "cost_history" in data:
-                    self.payload = data
-                else:
-                    self.payload = self.__start_training(path)
-                    generate_json(name="carml", content=self.payload)
+            self.payload = self.__start_training(path)
+            generate_json(name="carml", content=self.payload)
 
     def __start_training(self, path: str) -> dict:
 
         self.X, self.Y = self.__normalize_data()
         self.__theta = np.zeros((2, 1))
         self.__learning_rate = 0.001
-        self.n_iterations = 5000
+        self.__n_iterations = 10000
 
         self.__theta, self.__cost_history = self.gradient_descent(
             self.X,
@@ -43,10 +49,8 @@ class Train():
 
         self.__theta = self.denormalize_theta(self.__theta, self.x, self.y)
 
-        self.payload = self.__build_payload(self.__theta,
-                                            self.__cost_history,
-                                            self.__n_iterations)
-        return self.payload
+        payload = self.__build_payload()
+        return payload
 
     def __get_features_targets(self):
         """ Get the features and targets from the dataset.
@@ -75,11 +79,11 @@ class Train():
 
         return X, Y
 
-    def __build_payload(self, theta, cost_history, n_iterations):
+    def __build_payload(self):
         return {
-            "theta": theta,
-            "cost_history": cost_history,
-            "n_iterations": n_iterations
+            "theta": self.__theta.tolist(),
+            "cost_history": self.__cost_history.tolist(),
+            "n_iterations": self.__n_iterations
         }
 
     @staticmethod

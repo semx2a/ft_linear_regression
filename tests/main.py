@@ -18,7 +18,8 @@ def main(argv):
     welcome += "1. Estimate a price\n"
     welcome += "2. Show regression plot\n"
     welcome += "3. Show cost history\n"
-    welcome += "4. Exit\n"
+    welcome += "4. Show R2\n"
+    welcome += "5. Exit\n"
     welcome += "Your choice ▶ "
     irma = "What's the mileage (km) of the car to estimate the price of? "
 
@@ -40,6 +41,8 @@ def main(argv):
                 case choice if choice == "3":
                     predict.show_cost_history(model)
                 case choice if choice == "4":
+                    predict.coefficient_of_determination(model)
+                case choice if choice == "5":
                     print("\nExiting...")
                     break
                 case _:
