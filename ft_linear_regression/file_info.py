@@ -7,10 +7,9 @@ def get_file_info(path: str) -> dict:
     information.
 
     Parameters:
-    path (str): path of the file.
-
+        path (str): path of the file.
     Return Value:
-    file_info (dict): a dictionary containing the file's information.
+        file_info (dict): a dictionary containing the file's information.
     """
     try:
         # Get file info
