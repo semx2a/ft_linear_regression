@@ -13,7 +13,12 @@ install() {
 }
 
 uninstall() {
+	echo "Uninstalling ft_linear_regression"
 	pip uninstall -y ft_linear_regression
+	echo "Removing build files"
+	rm -rf ./dist ./build ./ft_linear_regression.egg-info
+	echo "Removing installed files"
+	rm -rf ~/my_env/lib/python3.10/site-packages/ft_linear_regression*
 }
 
 case "$1" in

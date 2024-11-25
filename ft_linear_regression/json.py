@@ -1,12 +1,17 @@
 import json
 import os
 
+import numpy as np
+
 
 def generate_json(name: str, content: dict) -> None:
 
     try:
         if not name.endswith(".json"):
             name += ".json"
+        for key, value in content.items():
+            if isinstance(value, np.ndarray):
+                content[key] = value.tolist()
         with open(name, "w") as f:
             json.dump(content, f)
             f.close()
@@ -27,6 +32,6 @@ def load_json(path: str) -> dict | None:
             return None
 
     except FileNotFoundError as fnf:
-        print(fnf)
+        print(f"Load JSON Error: {fnf}")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Load JSON Error: {e}")

@@ -25,7 +25,7 @@ def show_regression(model: Train):
 
 
 def price_estimation(model: Train, mileage: int):
-    price = model.payload["theta"][0] * mileage + model.payload["theta"][1]
+    price = hypothesis(model.payload["theta"], mileage)
     price = price[0]
 
     if price < 0:
